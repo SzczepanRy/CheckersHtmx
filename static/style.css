@@ -1,0 +1,82 @@
+*{
+  box-sizing: border-box;
+  margin: 0;
+  color: red;
+}
+
+.main{
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.bgRow{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.bgCell{
+  width: 40px;
+   display: flex;
+  align-items: center;
+  justify-content: center;
+ height: 40px;
+}
+
+#c1{
+  background-color: black;
+  color: white;
+}
+.player{
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.row{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+h2{
+  top: 10px;
+  left: 10px;
+  position: absolute;
+}
+.cell{
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+}
+#p2{
+  background-color: darkgray;
+}
+#p1{
+  background-color: wheat;
+}
+#p3{
+  background-color:cyan;
+}
+
+#pi1{
+  flex-direction: column-reverse;
+}
+#pi0{
+  flex-direction: column;
+}

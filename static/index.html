@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="https://unpkg.com/htmx.org@2.0.1"></script>
+
+
+</head>
+
+<body id="body">
+  <div class="main">
+    {{range .NewBoard.BackgroundBoard }}
+    <div class="bgRow">
+      {{range .}}
+      <div id="c{{.}}" class="bgCell">
+
+      </div>
+      {{end}}
+    </div>
+    {{end}}
+
+  </div>
+  <div class="player">
+    {{range $KeyY , $ValueY := .NewBoard.PlayerBoard}}
+    <div class="row">
+      {{range $KeyX , $ValueX := $ValueY}}
+
+      {{ if isTwo  $ValueX }}
+      <form hx-post="/turn" id="p{{.}}" hx-target="body" class="cell {{ $KeyY }}{{$KeyX}}">
+        <input type="hidden" name="x" value="{{$KeyX}}">
+        <input type="hidden" name="y" value="{{$KeyY}}">
+        <button type="submit" class="button{{$ValueX}}" style="all:unset;">
+          {{$KeyX}}-{{ $KeyY }}
+        </button>
+      </form>
+
+      {{else if isThree $ValueX}}
+      <form hx-post="/move" id="p{{.}}" hx-target="body" class="cell {{ $KeyY }}{{$KeyX}}">
+        <input type="hidden" name="x" value="{{$KeyX}}">
+        <input type="hidden" name="y" value="{{$KeyY}}">
+        <button type="submit" class="button{{$ValueX}}" style="all:unset;">
+          {{$KeyX}}-{{ $KeyY }}
+        </button>
+      </form>
+
+      {{else}}
+      <div class="cell" id="p{{.}}">
+        {{$KeyX}}-{{ $KeyY }}
+      </div>
+      {{end}}
+
+      {{end}}
+    </div>
+    {{end}}
+
+
+
+  </div>
+
+  <h2>checkers</h2>
+</body>
+
+</html>
