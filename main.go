@@ -51,7 +51,7 @@ func main() {
 
 	funcMap := template.FuncMap{
 		"isTwo": func(i int) bool {
-			if i == 2 {
+			if i == 2 || i == 5 {
 				return true
 			}
 			return false
@@ -107,6 +107,7 @@ func main() {
 
 		x, y := readXYFromRequest(r)
 		newBoard.MovePiece(x, y, &PreviousCoordinates)
+    newBoard.checkForKing()
     newBoard.EnemyMove();
 
 		templ.Execute(w, BoardTemplate{NewBoard: newBoard})
