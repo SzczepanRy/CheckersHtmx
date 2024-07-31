@@ -28,12 +28,12 @@ func InitBoard() Board {
 		{0, 1, 0, 1, 0, 1, 0, 1},
 	}
 	newBoard.PlayerBoard = [8][8]int{
-		{1, 0, 1, 0, 5, 0, 1, 0},
+		{1, 0, 1, 0, 1, 0, 1, 0},
 		{0, 1, 0, 1, 0, 1, 0, 1},
 		{0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 1, 0, 0, 0, 0, 0, 0},
 		{0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 1, 0, 1, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0, 0},
 		{2, 0, 2, 0, 2, 0, 2, 0},
 		{0, 2, 0, 2, 0, 2, 0, 2},
 	}
@@ -41,6 +41,7 @@ func InitBoard() Board {
 	return newBoard
 
 }
+
 func (b *Board) ReadBackgroundBoard() {
 
 	for _, val := range b.BackgroundBoard {
@@ -234,13 +235,17 @@ func (b *Board) MovePiece(x int, y int, prev *Coordinates) {
 // emeny
 func (b *Board) EnemyMove() {
 	allEnemyCoords := []Coordinates{}
+	allEnemyKingis := []Coordinates{}
 
 	for y, arr := range b.PlayerBoard {
 		for x, _ := range arr {
 			if b.PlayerBoard[y][x] == 1 {
 				allEnemyCoords = append(allEnemyCoords, Coordinates{x: x, y: y})
 			}
-
+			if b.PlayerBoard[y][x] == 4 {
+				allEnemyCoords = append(allEnemyCoords, Coordinates{x: x, y: y})
+			}
+			// check the easy hits in pawns
 			if y+2 <= 7 && x-2 >= 0 {
 				if b.PlayerBoard[y][x] == 1 && b.PlayerBoard[y+1][x-1] == 2 && b.PlayerBoard[y+2][x-2] == 0 {
 					//there is a player piece on the right
@@ -279,6 +284,114 @@ func (b *Board) EnemyMove() {
 	}
 
 	randDir := rand.IntN(2)
+	checkKing := rand.IntN(2)
+
+	if checkKing == 0 {
+		if len(allEnemyKingis) > 0 {
+			randKing := allEnemyKingis[rand.IntN(len(allEnemyKingis))]
+			randKingDir := rand.IntN(4)
+
+			switch randKingDir {
+			case 0:
+				//b-l
+
+				temp := false
+				tempX := randKing.x
+				tempY := randKing.y
+				for {
+					if tempY <= 7 && tempX >= 0 {
+						tempX -= 1
+						tempY += 1
+						if b.PlayerBoard[tempY][tempY] == 1 {
+							temp = true
+						}
+
+						if b.PlayerBoard[tempY][tempY] == 0 && temp {
+							b.PlayerBoard[tempY][tempX] = 4
+							b.PlayerBoard[randKing.y][randKing.x] = 0
+							break
+						}
+					} else {
+						break
+					}
+				}
+				return
+			case 1:
+				//b-r
+				temp := false
+				tempX := randKing.x
+				tempY := randKing.y
+				for {
+					if tempY <= 7 && tempX <= 7 {
+						tempX += 1
+						tempY += 1
+						if b.PlayerBoard[tempY][tempY] == 1 {
+							temp = true
+						}
+
+						if b.PlayerBoard[tempY][tempY] == 0 && temp {
+							b.PlayerBoard[tempY][tempX] = 4
+							b.PlayerBoard[randKing.y][randKing.x] = 0
+							break
+						}
+					} else {
+						break
+					}
+				}
+				return
+
+			case 2:
+				//t-l
+				temp := false
+				tempX := randKing.x
+				tempY := randKing.y
+				for {
+					if tempY >= 0 && tempX >= 0 {
+						tempX -= 1
+						tempY -= 1
+						if b.PlayerBoard[tempY][tempY] == 1 {
+							temp = true
+						}
+
+						if b.PlayerBoard[tempY][tempY] == 0 && temp {
+							b.PlayerBoard[tempY][tempX] = 4
+							b.PlayerBoard[randKing.y][randKing.x] = 0
+							break
+						}
+					} else {
+						break
+					}
+				}
+				return
+
+			case 3:
+				//t-r
+				temp := false
+				tempX := randKing.x
+				tempY := randKing.y
+				for {
+					if tempY >= 0  && tempX <= 7 {
+						tempX += 1
+						tempY -= 1
+						if b.PlayerBoard[tempY][tempY] == 1 {
+							temp = true
+						}
+
+						if b.PlayerBoard[tempY][tempY] == 0 && temp {
+							b.PlayerBoard[tempY][tempX] = 4
+							b.PlayerBoard[randKing.y][randKing.x] = 0
+							break
+						}
+					} else {
+						break
+					}
+				}
+				return
+
+			}
+
+		}
+	}
 
 	//	fmt.Println("random dir", randDir)
 
@@ -344,14 +457,40 @@ func (b *Board) EnemyMove() {
 		}
 
 	}
-  fix some errors here
+	//fix some errors here
+	//when the last piece is at the end of the board than this function locks in a loop
+	//temporary solution ..
+	if len(allEnemyCoords) == 0 {
+		fmt.Println("___________________")
+		fmt.Println(randDir, randPiece)
+		fmt.Println("Enemy turn skipped ")
+		return
 
+	}
 
 	fmt.Println("Faled")
 	b.EnemyMove()
 }
 
-func (b *Board) checkForKing() {
+func (b *Board) CountPieces() (EnemyCount int, PlayerCount int) {
+	numE := 0
+	numP := 0
+	for _, arr := range b.PlayerBoard {
+		for _, val := range arr {
+			if val == 1 || val == 4 {
+				numE += 1
+			}
+			if val == 2 || val == 5 {
+
+				numP += 1
+			}
+		}
+
+	}
+	return numE, numP
+}
+
+func (b *Board) CheckForKing() {
 	for x, val := range b.PlayerBoard[0] {
 		if val == 2 {
 			b.PlayerBoard[0][x] = 5

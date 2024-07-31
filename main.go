@@ -1,6 +1,5 @@
 package main
 
-
 import (
 	"fmt"
 	"html/template"
@@ -69,7 +68,7 @@ func main() {
 
 			fmt.Println("css called")
 			http.ServeFile(w, r, "./static/style.css")
-		}else {
+		} else {
 			//remember the prefilght request
 
 			//templ := template.Must(template.ParseFiles("./static/index.html"))
@@ -93,7 +92,7 @@ func main() {
 		}
 
 		x, y := readXYFromRequest(r)
-    newBoard.ClearBoard()
+		newBoard.ClearBoard()
 		newBoard.SelectBoard(x, y, &PreviousCoordinates)
 		templ.Execute(w, BoardTemplate{NewBoard: newBoard})
 	}
@@ -107,11 +106,20 @@ func main() {
 
 		x, y := readXYFromRequest(r)
 		newBoard.MovePiece(x, y, &PreviousCoordinates)
-    newBoard.checkForKing()
-    newBoard.EnemyMove();
+		newBoard.CheckForKing()
+		newBoard.EnemyMove()
+		EnemyCount, PlayerCount := newBoard.CountPieces()
+
+		if PlayerCount== 0 {
+			http.ServeFile(w, r, "./static/enemyWin.html")
+		}
+
+
+		if EnemyCount == 0 {
+			http.ServeFile(w, r, "./static/userWin.html")
+		}
 
 		templ.Execute(w, BoardTemplate{NewBoard: newBoard})
-
 
 	}
 
